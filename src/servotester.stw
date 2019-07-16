@@ -6,3 +6,7 @@ Keyword=ST7Workspace-V0.7
 [Project0]
 Filename=servotester.stp
 Dependencies=
+[Options]
+ActiveProject=servotester
+ActiveConfig=Debug
+AddSortedElements=0

@@ -82,10 +82,10 @@ String.100.0=STM8S003F3P
 
 [Root.Config.0.Settings.3]
 String.2.0=Compiling $(InputFile)...
-String.3.0=cxstm8 -istm8s_stdperiph_driver\inc  -customDbg -customDebCompat -customOpt-no -customLst -l +mods0 -customC-pp $(ToolsetIncOpts) -cl$(IntermPath) -co$(IntermPath) $(InputFile) 
+String.3.0=cxstm8 +mods0 -customUser-dF_CPU=16000000UL -customDebCompat -customOpt-no -customC-pp -customLst -l -dSTM8S003 -istm8s_stdperiph_driver\inc $(ToolsetIncOpts) -cl$(IntermPath) -co$(IntermPath) $(InputFile)
 String.4.0=$(IntermPath)$(InputName).$(ObjectExt)
 String.5.0=$(IntermPath)$(InputName).ls
-String.6.0=2018,4,27,16,37,57
+String.6.0=2019,7,15,23,31,7
 
 [Root.Config.0.Settings.4]
 String.2.0=Assembling $(InputFile)...
@@ -97,14 +97,16 @@ String.6.0=2018,4,27,16,37,57
 [Root.Config.0.Settings.5]
 String.2.0=Running Pre-Link step
 String.6.0=2018,4,27,16,37,57
+String.8.0=
 
 [Root.Config.0.Settings.6]
 String.2.0=Running Linker
 String.3.0=clnk -customMapFile -customMapFile-m $(OutputPath)$(TargetSName).map -fakeRunConv  -fakeInteger  -fakeSemiAutoGen  $(ToolsetLibOpts)  -o $(OutputPath)$(TargetSName).sm8 -fakeOutFile$(ProjectSFile).elf -customCfgFile $(OutputPath)$(TargetSName).lkf -fakeVectFilestm8_interrupt_vector.c    -fakeStartupcrtsi0.sm8 
 String.3.1=cvdwarf $(OutputPath)$(TargetSName).sm8 -fakeVectAddr0x8000
 String.4.0=$(OutputPath)$(TargetFName)
-String.5.0=$(OutputPath)$(TargetSName).map $(OutputPath)$(TargetSName).st7 $(OutputPath)$(TargetSName).s19
-String.6.0=2018,4,27,16,37,57
+String.5.0=
+String.6.0=2019,7,15,23,26,53
+String.100.0=
 String.101.0=crtsi.st7
 String.102.0=+seg .const -b 0x8080 -m 0x1f80  -n .const -it 
 String.102.1=+seg .text -a .const  -n .text 
@@ -161,10 +163,10 @@ String.100.0=STM8S003F3P
 
 [Root.Config.1.Settings.3]
 String.2.0=Compiling $(InputFile)...
-String.3.0=cxstm8 -istm8s_stdperiph_driver\inc  +mods0 -customC-pp $(ToolsetIncOpts) -cl$(IntermPath) -co$(IntermPath) $(InputFile) 
+String.3.0=cxstm8 +mods0 -customUser-dF_CPU=16000000UL -customC-pp -istm8s_stdperiph_driver\inc $(ToolsetIncOpts) -cl$(IntermPath) -co$(IntermPath) $(InputFile)
 String.4.0=$(IntermPath)$(InputName).$(ObjectExt)
 String.5.0=$(IntermPath)$(InputName).ls
-String.6.0=2018,4,27,16,37,57
+String.6.0=2019,7,15,23,31,7
 
 [Root.Config.1.Settings.4]
 String.2.0=Assembling $(InputFile)...
@@ -182,8 +184,9 @@ String.2.0=Running Linker
 String.3.0=clnk -fakeRunConv  -fakeInteger  -fakeSemiAutoGen  $(ToolsetLibOpts)  -o $(OutputPath)$(TargetSName).sm8 -fakeOutFile$(ProjectSFile).elf -customCfgFile $(OutputPath)$(TargetSName).lkf -fakeVectFilestm8_interrupt_vector.c    -fakeStartupcrtsi0.sm8 
 String.3.1=cvdwarf $(OutputPath)$(TargetSName).sm8 -fakeVectAddr0x8000
 String.4.0=$(OutputPath)$(TargetFName)
-String.5.0=$(OutputPath)$(TargetSName).map $(OutputPath)$(TargetSName).st7 $(OutputPath)$(TargetSName).s19
-String.6.0=2018,4,27,16,37,57
+String.5.0=
+String.6.0=2019,7,15,23,26,53
+String.100.0=
 String.101.0=crtsi.st7
 String.102.0=+seg .const -b 0x8080 -m 0x1f80  -n .const -it 
 String.102.1=+seg .text -a .const  -n .text 
@@ -214,7 +217,7 @@ String.6.0=2018,4,27,16,37,57
 [Root.Source Files]
 ElemType=Folder
 PathName=Source Files
-Child=Root.Source Files.stm8s_stdperiph_driver\src\stm8s_adc2.c
+Child=Root.Source Files.delay.c
 Next=Root.Include Files
 Config.0=Root.Source Files.Config.0
 Config.1=Root.Source Files.Config.1
@@ -239,10 +242,10 @@ Int.1=0
 
 [Root.Source Files.Config.0.Settings.1]
 String.2.0=Compiling $(InputFile)...
-String.3.0=cxstm8 -istm8s_stdperiph_driver\inc  -customDbg -customDebCompat -customOpt-no -customLst -l +mods0 -customC-pp $(ToolsetIncOpts) -cl$(IntermPath) -co$(IntermPath) $(InputFile) 
+String.3.0=cxstm8 +mods0 -customUser-dF_CPU=16000000UL -customDebCompat -customOpt-no -customC-pp -customLst -l -dSTM8S003 -istm8s_stdperiph_driver\inc $(ToolsetIncOpts) -cl$(IntermPath) -co$(IntermPath) $(InputFile)
 String.4.0=$(IntermPath)$(InputName).$(ObjectExt)
 String.5.0=$(IntermPath)$(InputName).ls
-String.6.0=2018,4,27,16,37,57
+String.6.0=2019,7,15,23,31,7
 
 [Root.Source Files.Config.0.Settings.2]
 String.2.0=Assembling $(InputFile)...
@@ -266,10 +269,10 @@ Int.1=0
 
 [Root.Source Files.Config.1.Settings.1]
 String.2.0=Compiling $(InputFile)...
-String.3.0=cxstm8 -istm8s_stdperiph_driver\inc  +mods0 -customC-pp $(ToolsetIncOpts) -cl$(IntermPath) -co$(IntermPath) $(InputFile) 
+String.3.0=cxstm8 +mods0 -customUser-dF_CPU=16000000UL -customC-pp -istm8s_stdperiph_driver\inc $(ToolsetIncOpts) -cl$(IntermPath) -co$(IntermPath) $(InputFile)
 String.4.0=$(IntermPath)$(InputName).$(ObjectExt)
 String.5.0=$(IntermPath)$(InputName).ls
-String.6.0=2018,4,27,16,37,57
+String.6.0=2019,7,15,23,31,7
 
 [Root.Source Files.Config.1.Settings.2]
 String.2.0=Assembling $(InputFile)...
@@ -285,14 +288,39 @@ String.4.0=
 String.5.0=
 String.6.0=2018,4,27,16,37,57
 
-[Root.Source Files.stm8s_stdperiph_driver\src\stm8s_adc2.c]
+[Root.Source Files.delay.c]
 ElemType=File
-PathName=stm8s_stdperiph_driver\src\stm8s_adc2.c
+PathName=delay.c
+Next=Root.Source Files.3461as-1.c
+
+[Root.Source Files.3461as-1.c]
+ElemType=File
+PathName=3461as-1.c
+Next=Root.Source Files.stm8s_stdperiph_driver\src\stm8s_gpio.c
+
+[Root.Source Files.stm8s_stdperiph_driver\src\stm8s_gpio.c]
+ElemType=File
+PathName=stm8s_stdperiph_driver\src\stm8s_gpio.c
 Next=Root.Source Files.main.c
 
 [Root.Source Files.main.c]
 ElemType=File
 PathName=main.c
+Next=Root.Source Files.stm8s_stdperiph_driver\src\stm8s_tim2.c
+
+[Root.Source Files.stm8s_stdperiph_driver\src\stm8s_tim2.c]
+ElemType=File
+PathName=stm8s_stdperiph_driver\src\stm8s_tim2.c
+Next=Root.Source Files.stm8s_it.c
+
+[Root.Source Files.stm8s_it.c]
+ElemType=File
+PathName=stm8s_it.c
+Next=Root.Source Files.stm8s_stdperiph_driver\src\stm8s_adc1.c
+
+[Root.Source Files.stm8s_stdperiph_driver\src\stm8s_adc1.c]
+ElemType=File
+PathName=stm8s_stdperiph_driver\src\stm8s_adc1.c
 Next=Root.Source Files.stm8_interrupt_vector.c
 
 [Root.Source Files.stm8_interrupt_vector.c]
@@ -302,7 +330,7 @@ PathName=stm8_interrupt_vector.c
 [Root.Include Files]
 ElemType=Folder
 PathName=Include Files
-Child=Root.Include Files.stm8s_stdperiph_driver\inc\stm8s_adc2.h
+Child=Root.Include Files.delay.h
 Config.0=Root.Include Files.Config.0
 Config.1=Root.Include Files.Config.1
 
@@ -326,10 +354,10 @@ Int.1=0
 
 [Root.Include Files.Config.0.Settings.1]
 String.2.0=Compiling $(InputFile)...
-String.3.0=cxstm8 -istm8s_stdperiph_driver\inc  -customDbg -customDebCompat -customOpt-no -customLst -l +mods0 -customC-pp $(ToolsetIncOpts) -cl$(IntermPath) -co$(IntermPath) $(InputFile) 
+String.3.0=cxstm8 +mods0 -customUser-dF_CPU=16000000UL -customDebCompat -customOpt-no -customC-pp -customLst -l -dSTM8S003 -istm8s_stdperiph_driver\inc $(ToolsetIncOpts) -cl$(IntermPath) -co$(IntermPath) $(InputFile)
 String.4.0=$(IntermPath)$(InputName).$(ObjectExt)
 String.5.0=$(IntermPath)$(InputName).ls
-String.6.0=2018,4,27,16,37,57
+String.6.0=2019,7,15,23,31,7
 
 [Root.Include Files.Config.0.Settings.2]
 String.2.0=Assembling $(InputFile)...
@@ -353,10 +381,10 @@ Int.1=0
 
 [Root.Include Files.Config.1.Settings.1]
 String.2.0=Compiling $(InputFile)...
-String.3.0=cxstm8 -istm8s_stdperiph_driver\inc  +mods0 -customC-pp $(ToolsetIncOpts) -cl$(IntermPath) -co$(IntermPath) $(InputFile) 
+String.3.0=cxstm8 +mods0 -customUser-dF_CPU=16000000UL -customC-pp -istm8s_stdperiph_driver\inc $(ToolsetIncOpts) -cl$(IntermPath) -co$(IntermPath) $(InputFile)
 String.4.0=$(IntermPath)$(InputName).$(ObjectExt)
 String.5.0=$(IntermPath)$(InputName).ls
-String.6.0=2018,4,27,16,37,57
+String.6.0=2019,7,15,23,31,7
 
 [Root.Include Files.Config.1.Settings.2]
 String.2.0=Assembling $(InputFile)...
@@ -372,6 +400,21 @@ String.4.0=
 String.5.0=
 String.6.0=2018,4,27,16,37,57
 
-[Root.Include Files.stm8s_stdperiph_driver\inc\stm8s_adc2.h]
+[Root.Include Files.delay.h]
 ElemType=File
-PathName=stm8s_stdperiph_driver\inc\stm8s_adc2.h
+PathName=delay.h
+Next=Root.Include Files.iostm8s003f3.h
+
+[Root.Include Files.iostm8s003f3.h]
+ElemType=File
+PathName=iostm8s003f3.h
+Next=Root.Include Files.3461as-1.h
+
+[Root.Include Files.3461as-1.h]
+ElemType=File
+PathName=3461as-1.h
+Next=Root.Include Files.stm8s_stdperiph_driver\inc\stm8s_adc1.h
+
+[Root.Include Files.stm8s_stdperiph_driver\inc\stm8s_adc1.h]
+ElemType=File
+PathName=stm8s_stdperiph_driver\inc\stm8s_adc1.h

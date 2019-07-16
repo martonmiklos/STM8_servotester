@@ -50,3 +50,11 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+.directory
+
+src/Debug
+src/Release
+TAGS*.txt
+
+checkres.spy

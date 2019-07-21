@@ -26,9 +26,12 @@
   */ 
 
 /* Includes ------------------------------------------------------------------*/
-#include "stm8s.h"
-#include "iostm8s003f3.h"
+
 #include "3461as-1.h"
+#include "delay.h"
+#include "iostm8s003f3.h"
+#include "main.h"
+#include "stm8s.h"
 /**
   * @addtogroup ADC2_ContinuousConversion
   * @{
@@ -37,8 +40,18 @@
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 uint16_t ADC_Reading = 0;
+uint16_t Buttons_Reading = 0;
 uint16_t lastADC_Reading = 0;
 uint16_t ppm = 0;
+ADC_Channel_t currentADCChannel = ADC_CH_Poti;
+PulseMode_t pulseMode = PulseMode_Normal;
+
+uint8_t selectPressed = 0;
+uint8_t pwPressed = 0;
+uint16_t menuTimer = 0;
+
+uint8_t selectReleased = 0;
+uint8_t pwReleased = 0;
 /* Private function prototypes -----------------------------------------------*/
 static void ADC_Config(void);
 static void PWM_Config(void);
@@ -71,17 +84,35 @@ void main(void)
   PWM_Config();
      
   while (1) {
-	if (ADC_Reading != lastADC_Reading) {
-		ppm = 988 + (1023 - ADC_Reading);
-		if (ppm > 2000)
-			ppm = 2000;
-		else if (ppm < 1000)
-			ppm = 1000;
-		displayNumber(ppm);
-		lastADC_Reading = ADC_Reading;
-
-		TIM1_CCR3H = (ppm >> 8);
-		TIM1_CCR3L = (uint8_t)(ppm & 0xFF);
+	if (selectPressed) {
+		selectPressed = 0;
+		if (pulseMode == PulseMode_Normal) {
+			pulseMode = PulseMode_DJI;
+			displayCharacters(Character_d, Character_J, Character_i, Character_blank);
+			TIM1_SetAutoreload(US_TO_ARR(DJI_PERIOD_IN_US));
+		} else if (pulseMode == PulseMode_DJI) {
+			pulseMode = PulseMode_Normal;
+			displayCharacters(Character_n, Character_o, Character_r, Character_blank);
+			TIM1_SetAutoreload(US_TO_ARR(NORMAL_PERIOD_IN_US));
+		}
+		menuTimer = 1000;
+	} else {
+		if (ADC_Reading != lastADC_Reading) {
+			if (pulseMode == PulseMode_Normal) {
+				ppm = 1400 + ((((float)(1023 - ADC_Reading)) / 1023.0) * 3200);
+			} else if (pulseMode == PulseMode_DJI) {
+				ppm = 2000 + ((((float)(1023 - ADC_Reading)) / 1023.0) * 2000);
+			}
+			
+			
+			lastADC_Reading = ADC_Reading;
+			TIM1_CCR3H = (ppm >> 8);
+			TIM1_CCR3L = (uint8_t)(ppm & 0xFF);
+		}
+		
+		if (menuTimer == 0) {
+			displayNumber(ppm / 2);
+		}
 	}
 	refreshDisplay();
   }
@@ -103,8 +134,9 @@ static void ADC_Config()
   ADC1_DeInit();
 
   /* Init ADC2 peripheral */
-  ADC1_Init(ADC1_CONVERSIONMODE_CONTINUOUS, ADC1_CHANNEL_3, ADC1_PRESSEL_FCPU_D10, \
-            ADC1_EXTTRIG_TIM, DISABLE, ADC1_ALIGN_RIGHT, ADC1_SCHMITTTRIG_CHANNEL3,\
+  ADC1_Init(ADC1_CONVERSIONMODE_SINGLE, ADC1_CHANNEL_3, ADC1_PRESSEL_FCPU_D10, 
+            ADC1_EXTTRIG_TIM, DISABLE, ADC1_ALIGN_RIGHT, 
+			ADC1_SCHMITTTRIG_CHANNEL3 |ADC1_SCHMITTTRIG_CHANNEL4,
             DISABLE);
 
   /* Enable EOC interrupt */
@@ -121,11 +153,11 @@ static void PWM_Config(void)
 {
   //clock at 16MHz
 
-  /* TIM2 Peripheral Configuration */ 
+  /* TIM1 Peripheral Configuration */ 
   TIM1_DeInit();
 
-  /* Set TIM2 Frequency to 2Mhz */ 
-  TIM1_TimeBaseInit(15, TIM1_COUNTERMODE_UP, 20000, 1);
+  // Prescaler set to 8 -> ftick = 2 MHz -> we get a 0.5 us tick interval
+  TIM1_TimeBaseInit(7, TIM1_COUNTERMODE_UP, US_TO_ARR(NORMAL_PERIOD_IN_US), 1);
 
   /* Channel 1 PWM configuration */ 
   TIM1_OC3Init(TIM1_OCMODE_PWM1, 
@@ -145,6 +177,15 @@ static void PWM_Config(void)
   TIM1_Cmd(ENABLE);
   
   TIM1_CtrlPWMOutputs(ENABLE);
+  
+  // setup TIM2 to give 1 ms OVFs
+  
+  TIM2_DeInit();
+  
+  TIM2_TimeBaseInit(4, 1000);
+  TIM2_ITConfig(TIM2_IT_UPDATE, ENABLE);
+
+  TIM2_Cmd(ENABLE);
 }
  
 #ifdef USE_FULL_ASSERT

@@ -9,9 +9,6 @@
 #define DIG3 PB_ODR_bits.ODR4
 #define DIG4 PD_ODR_bits.ODR4
 
-void displayNumber(uint16_t number);
-void refreshDisplay(void);
-
 typedef enum DisplayColumn {
 	Digit_1,
 	Digit_2,
@@ -29,4 +26,28 @@ typedef enum DisplaySegment {
 	Segment_C = 0b10000000
 } DisplaySegment_t;
 
+typedef enum Characters {
+	Character_0 = 0,
+	Character_1,
+	Character_2,
+	Character_3,
+	Character_4,
+	Character_5,
+	Character_6,
+	Character_7,
+	Character_8,
+	Character_9,
+	Character_d,
+	Character_J,
+	Character_i,
+	Character_n,
+	Character_o,
+	Character_r,
+	Character_blank
+} Characters_t;
+
+
+void displayNumber(uint16_t number);
+void displayCharacters(Characters_t digit1, Characters_t digit2, Characters_t digit3, Characters_t digit4);
+void refreshDisplay(void);
 #endif

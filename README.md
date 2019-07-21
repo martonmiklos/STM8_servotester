@@ -12,7 +12,10 @@ After a few hours and some STM8 development related rediscoveries I managed to g
 I have included an STM8 CubeMX project as a reference for the pinout:
 ![Pinout](docs/cubemx.png?raw=true "Pinout")
 
-At the moment only 1000-2000 us generation supported but new features could came with time (support DJI ESCs for e.g.)
+## Features
+At the moment two modes supported_
+ - 700 - 2300 us standard servo
+ - "DJI" mode: 1000us - 2000us with 2500 us interval
 
 ## Toolchain info
 

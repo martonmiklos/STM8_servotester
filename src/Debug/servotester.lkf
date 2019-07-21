@@ -55,6 +55,7 @@ Debug\delay.o
 Debug\3461as-1.o
 Debug\stm8s_gpio.o
 Debug\main.o
+Debug\stm8s_tim2.o
 Debug\stm8s_it.o
 Debug\stm8s_adc1.o
 #<END OBJECT_FILES>

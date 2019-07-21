@@ -2,10 +2,10 @@
 
 #include "iostm8s003f3.h"
 
-static uint16_t displayedNumber = 0;
 static DisplayColumn_t currentDigit = Digit_1;
+static uint8_t displayBuffer[4];
 
-const unsigned char digitMap[10] = 
+const unsigned char digitMap[] = 
 {	
 	(Segment_A | 
 	 Segment_B |
@@ -55,7 +55,26 @@ const unsigned char digitMap[10] =
 	 Segment_C |
 	 Segment_D |
 	 Segment_F |
-	 Segment_G)// 9
+	 Segment_G),// 9
+	 (Segment_B | 
+	 Segment_E |
+	 Segment_D |
+	 Segment_C |
+	 Segment_G), // d
+	 (Segment_B | 
+	 Segment_C |
+	 Segment_D),// J
+	 (Segment_C),// i
+	 (Segment_E | 
+	 Segment_G |
+	 Segment_C), // n
+	 (Segment_E | 
+	 Segment_G |
+	 Segment_D |
+	 Segment_C), // o
+	 (Segment_E | 
+	 Segment_G), // r
+	 (0),// blank
 };
 
 void writeDisplayPort(uint8_t digit)
@@ -67,7 +86,18 @@ void writeDisplayPort(uint8_t digit)
 
 void displayNumber(uint16_t number)
 {
-	displayedNumber = number;
+	displayBuffer[0] = (number / 1000);
+	displayBuffer[1] = ((number / 100) % 10);
+	displayBuffer[2] = ((number / 10) % 10);
+	displayBuffer[3] = (number % 10);
+}
+
+void displayCharacters(Characters_t digit1, Characters_t digit2, Characters_t digit3, Characters_t digit4)
+{
+	displayBuffer[0] = digit1;
+	displayBuffer[1] = digit2;
+	displayBuffer[2] = digit3;
+	displayBuffer[3] = digit4;
 }
 
 void refreshDisplay(void)
@@ -78,26 +108,22 @@ void refreshDisplay(void)
 	case Digit_1:
 		DIG4 = 1;
 		DIG1 = 0;
-		n = (displayedNumber / 1000);
-	    writeDisplayPort(digitMap[n]);
+	    writeDisplayPort(digitMap[displayBuffer[0]]);
 		break;
 	case Digit_2:
 		DIG1 = 1;
 		DIG2 = 0;
-		n = ((displayedNumber / 100) % 10);
-	    writeDisplayPort(digitMap[n]);
+	    writeDisplayPort(digitMap[displayBuffer[1]]);
 		break;
 	case Digit_3:
 		DIG2 = 1;
 		DIG3 = 0;
-		n = ((displayedNumber / 10) % 10);
-	    writeDisplayPort(digitMap[n]);
+	    writeDisplayPort(digitMap[displayBuffer[2]]);
 		break;
 	case Digit_4:
 		DIG3 = 1;
 		DIG4 = 0;
-		n = (displayedNumber % 10);
-	    writeDisplayPort(digitMap[n]);
+	    writeDisplayPort(digitMap[displayBuffer[3]]);
 		break;
 	}
 	currentDigit++;

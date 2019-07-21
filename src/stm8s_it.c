@@ -26,6 +26,7 @@
   */ 
 
 /* Includes ------------------------------------------------------------------*/
+#include "main.h"
 #include "stm8s_it.h"
 
 /* Private typedef -----------------------------------------------------------*/
@@ -33,6 +34,16 @@
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 extern uint16_t ADC_Reading;
+extern uint16_t Buttons_Reading;
+extern ADC_Channel_t currentADCChannel;
+extern uint8_t selectPressed;
+extern uint8_t pwPressed;
+extern uint16_t menuTimer;
+
+uint8_t pulseWidthButtonPressTimer = 0;
+uint8_t selectButtonPressTimer = 0;
+uint8_t pulseWidthButtonReleaseTimer = 0;
+uint8_t selectButtonReleaseTimer = 0;
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
 /* Public functions ----------------------------------------------------------*/
@@ -272,6 +283,12 @@ INTERRUPT_HANDLER(TIM1_CAP_COM_IRQHandler, 12)
   /* In order to detect unexpected events during development,
      it is recommended to set a breakpoint on the following instruction.
   */
+	TIM2_ClearITPendingBit(TIM2_IT_UPDATE);
+	ADC1->CSR &= (uint8_t)(~ADC1_CSR_CH);
+	ADC1->CSR |= currentADCChannel;
+	ADC1_StartConversion();
+	if (menuTimer)
+		menuTimer--;
  }
 
 /**
@@ -422,9 +439,35 @@ INTERRUPT_HANDLER(I2C_IRQHandler, 19)
   */
  INTERRUPT_HANDLER(ADC1_IRQHandler, 22)
  {
+	uint16_t tmp;
     /* Get converted value */
-    ADC_Reading = ADC1_GetConversionValue();
-
+	if (currentADCChannel == ADC_CH_Poti) {
+		ADC_Reading = ADC1_GetConversionValue();
+		currentADCChannel = ADC_CH_Buttons;
+	} else {
+		tmp = ADC1_GetConversionValue();
+		if (tmp > BTN_SELECT_THRESHOLD) {
+			if (Buttons_Reading <= BTN_SELECT_THRESHOLD) {
+				selectButtonPressTimer = 255;
+			} else {
+				selectButtonPressTimer--;
+				if (selectButtonPressTimer == 0)
+					selectPressed = 1;
+			}
+		} else {
+			if (tmp > BTN_PULSE_W_THRESHOLD) {
+				if (Buttons_Reading <= BTN_PULSE_W_THRESHOLD) {
+					pulseWidthButtonPressTimer = 255;
+				} else {
+					pulseWidthButtonPressTimer--;
+					if (pulseWidthButtonPressTimer == 0)
+						pwPressed = 1;
+				}
+			}
+		}
+		Buttons_Reading = tmp;
+		currentADCChannel = ADC_CH_Poti;
+	}
     ADC1_ClearITPendingBit(ADC1_IT_EOC);
  }
 #endif /*STM8S208 or STM8S207 or STM8AF52Ax or STM8AF62Ax */
@@ -440,7 +483,7 @@ INTERRUPT_HANDLER(TIM6_UPD_OVF_TRG_IRQHandler, 23)
   /* In order to detect unexpected events during development,
      it is recommended to set a breakpoint on the following instruction.
   */
- }
+
 #else /*STM8S208, STM8S207, STM8S105 or STM8S103 or STM8S001 or STM8AF62Ax or STM8AF52Ax or STM8AF626x */
 /**
   * @brief  Timer4 Update/Overflow Interrupt routine

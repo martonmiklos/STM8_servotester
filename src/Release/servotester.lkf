@@ -55,6 +55,7 @@ Release\delay.o
 Release\3461as-1.o
 Release\stm8s_gpio.o
 Release\main.o
+Release\stm8s_tim2.o
 Release\stm8s_it.o
 Release\stm8s_adc1.o
 #<END OBJECT_FILES>

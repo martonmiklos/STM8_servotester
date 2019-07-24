@@ -74,6 +74,25 @@ const unsigned char digitMap[] =
 	 Segment_C), // o
 	 (Segment_E | 
 	 Segment_G), // r
+	 (Segment_F | 
+	 Segment_D |
+	 Segment_G |
+	 Segment_C |
+	 Segment_E), // b
+	 (Segment_F | 
+	 Segment_D |
+	 Segment_G |
+	 Segment_E), // t
+	 (Segment_F | 
+	 Segment_A |
+	 Segment_B |
+	 Segment_E |
+	 Segment_G), //p
+	 (Segment_F | 
+	 Segment_A |
+	 Segment_D |
+	 Segment_E |
+	 Segment_G), //E
 	 (0),// blank
 };
 

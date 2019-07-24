@@ -6,7 +6,7 @@
 #define NORMAL_PERIOD_IN_US 20000
 #define DJI_PERIOD_IN_US 2500
 
-#define US_TO_ARR(us) (us*2)
+#define US_TO_ARR(us) (us)
 
 typedef enum ADC_Channel {
 	ADC_CH_Poti = ADC1_CHANNEL_3,
@@ -18,8 +18,14 @@ typedef enum PulseMode {
 	PulseMode_DJI
 } PulseMode_t;
 
+typedef struct ServoType {
+	uint16_t min;
+	uint16_t max;
+} ServoType_t;
+
 #define BTN_PULSE_W_THRESHOLD 480
 #define BTN_SELECT_THRESHOLD 600
 #define BTN_BOTH_THRESHOLD 700
+
 
 #endif

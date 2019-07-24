@@ -43,6 +43,10 @@ typedef enum Characters {
 	Character_n,
 	Character_o,
 	Character_r,
+	Character_b,
+	Character_t,
+	Character_p,
+	Character_E,
 	Character_blank
 } Characters_t;
 

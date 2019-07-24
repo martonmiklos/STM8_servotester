@@ -217,7 +217,7 @@ String.6.0=2018,4,27,16,37,57
 [Root.Source Files]
 ElemType=Folder
 PathName=Source Files
-Child=Root.Source Files.stm8s_stdperiph_driver\src\stm8s_tim1.c
+Child=Root.Source Files.eeprom.c
 Next=Root.Include Files
 Config.0=Root.Source Files.Config.0
 Config.1=Root.Source Files.Config.1
@@ -288,6 +288,11 @@ String.4.0=
 String.5.0=
 String.6.0=2018,4,27,16,37,57
 
+[Root.Source Files.eeprom.c]
+ElemType=File
+PathName=eeprom.c
+Next=Root.Source Files.stm8s_stdperiph_driver\src\stm8s_tim1.c
+
 [Root.Source Files.stm8s_stdperiph_driver\src\stm8s_tim1.c]
 ElemType=File
 PathName=stm8s_stdperiph_driver\src\stm8s_tim1.c
@@ -335,7 +340,7 @@ PathName=stm8_interrupt_vector.c
 [Root.Include Files]
 ElemType=Folder
 PathName=Include Files
-Child=Root.Include Files.main.h
+Child=Root.Include Files.eeprom.h
 Config.0=Root.Include Files.Config.0
 Config.1=Root.Include Files.Config.1
 
@@ -404,6 +409,11 @@ String.3.0=
 String.4.0=
 String.5.0=
 String.6.0=2018,4,27,16,37,57
+
+[Root.Include Files.eeprom.h]
+ElemType=File
+PathName=eeprom.h
+Next=Root.Include Files.main.h
 
 [Root.Include Files.main.h]
 ElemType=File

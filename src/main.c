@@ -29,9 +29,12 @@
 
 #include "3461as-1.h"
 #include "delay.h"
+#include "eeprom.h"
 #include "iostm8s003f3.h"
 #include "main.h"
 #include "stm8s.h"
+
+#include <stdlib.h.>
 /**
   * @addtogroup ADC2_ContinuousConversion
   * @{
@@ -41,7 +44,7 @@
 /* Private define ------------------------------------------------------------*/
 uint16_t ADC_Reading = 0;
 uint16_t Buttons_Reading = 0;
-uint16_t lastADC_Reading = 0;
+uint16_t lastADC_Reading = 0xFFFF;
 uint16_t ppm = 0;
 ADC_Channel_t currentADCChannel = ADC_CH_Poti;
 PulseMode_t pulseMode = PulseMode_Normal;
@@ -50,12 +53,78 @@ uint8_t selectPressed = 0;
 uint8_t pwPressed = 0;
 uint16_t menuTimer = 0;
 
+ServoType_t servoTypes[2];
+
 uint8_t selectReleased = 0;
 uint8_t pwReleased = 0;
 /* Private function prototypes -----------------------------------------------*/
 static void ADC_Config(void);
 static void PWM_Config(void);
 /* Private functions ---------------------------------------------------------*/
+
+void adjustLimits(void)
+{
+	// display bot
+	pwPressed = 0;
+	displayCharacters(Character_b, Character_o, Character_t, Character_blank);
+	while (!pwPressed && !selectPressed) {
+		refreshDisplay();
+		if (selectPressed)
+			return;
+	}
+	pwPressed = 0;
+	
+	// read and store bot
+	displayNumber(servoTypes[pulseMode].min);
+	while (!pwPressed && !selectPressed) {
+		refreshDisplay();
+		if (selectPressed)
+			return;
+		
+		if (ADC_Reading != lastADC_Reading) 
+			displayNumber(500 + ((((float)(1023 - ADC_Reading)) / 1023.0) * 1000));
+		
+		lastADC_Reading = ADC_Reading;
+	}
+	pwPressed = 0;
+	
+	servoTypes[pulseMode].min = (500 + ((((float)(1023 - lastADC_Reading)) / 1023.0) * 1000));
+	EEWriteU16((pulseMode * 4), servoTypes[pulseMode].min);
+	
+	// display top
+	displayCharacters(Character_t, Character_o, Character_p, Character_blank);
+	while (!pwPressed && !selectPressed) {
+		refreshDisplay();
+		if (selectPressed)
+			return;
+	}
+	pwPressed = 0;
+	
+	// read and storetop
+	displayNumber(servoTypes[pulseMode].max);
+	while (!pwPressed && !selectPressed) {
+		refreshDisplay();
+		if (selectPressed)
+			return;
+		
+		if (ADC_Reading != lastADC_Reading)
+			displayNumber(1500 + ((((float)(1023 - ADC_Reading)) / 1023.0) * 2000));
+		lastADC_Reading = ADC_Reading;
+	}
+	
+	servoTypes[pulseMode].max = (1500 + ((((float)(1023 - lastADC_Reading)) / 1023.0) * 2000));
+	EEWriteU16((pulseMode * 4) + 2, servoTypes[pulseMode].max);
+	
+	menuTimer = 2000;
+	while (menuTimer) {
+		refreshDisplay();
+		if ((menuTimer % 200) == 0) {
+			displayCharacters(Character_blank, Character_blank, Character_blank, Character_blank);
+		} else if ((menuTimer % 100) == 0) {
+			displayCharacters(Character_d, Character_o, Character_n, Character_E);
+		}
+	}
+}
 
 /**
   * @brief ADC2_ContinuousConversion  main entry point.
@@ -82,6 +151,12 @@ void main(void)
   PD_ODR = 0;
   ADC_Config();
   PWM_Config();
+  
+  servoTypes[PulseMode_Normal].min = EEReadU16WithDefValAndRange(EEAddr_Normal_Bot, 1000, 500, 1500);
+  servoTypes[PulseMode_Normal].max = EEReadU16WithDefValAndRange(EEAddr_Normal_Top, 2000, 1500, 3500);
+  
+  servoTypes[PulseMode_DJI].min = EEReadU16WithDefValAndRange(EEAddr_DJI_Bot, 1000, 500, 1500);
+  servoTypes[PulseMode_DJI].max = EEReadU16WithDefValAndRange(EEAddr_DJI_Top, 2000, 1500, 3500);
      
   while (1) {
 	if (selectPressed) {
@@ -96,14 +171,15 @@ void main(void)
 			TIM1_SetAutoreload(US_TO_ARR(NORMAL_PERIOD_IN_US));
 		}
 		menuTimer = 1000;
+	} else if (pwPressed) {
+		adjustLimits();
+		pwPressed = 0;
+		selectPressed = 0;
 	} else {
 		if (ADC_Reading != lastADC_Reading) {
-			if (pulseMode == PulseMode_Normal) {
-				ppm = 1400 + ((((float)(1023 - ADC_Reading)) / 1023.0) * 3200);
-			} else if (pulseMode == PulseMode_DJI) {
-				ppm = 2000 + ((((float)(1023 - ADC_Reading)) / 1023.0) * 2000);
-			}
-			
+			ppm = servoTypes[pulseMode].min + 
+					((((float)(1023 - ADC_Reading)) / 1023.0) * 
+					(servoTypes[pulseMode].max - servoTypes[pulseMode].min));
 			
 			lastADC_Reading = ADC_Reading;
 			TIM1_CCR3H = (ppm >> 8);
@@ -111,7 +187,7 @@ void main(void)
 		}
 		
 		if (menuTimer == 0) {
-			displayNumber(ppm / 2);
+			displayNumber(ppm);
 		}
 	}
 	refreshDisplay();
@@ -156,8 +232,8 @@ static void PWM_Config(void)
   /* TIM1 Peripheral Configuration */ 
   TIM1_DeInit();
 
-  // Prescaler set to 8 -> ftick = 2 MHz -> we get a 0.5 us tick interval
-  TIM1_TimeBaseInit(7, TIM1_COUNTERMODE_UP, US_TO_ARR(NORMAL_PERIOD_IN_US), 1);
+  // Prescaler set to 16 -> ftick = 1 MHz -> we get a 1 us tick interval
+  TIM1_TimeBaseInit(15, TIM1_COUNTERMODE_UP, US_TO_ARR(NORMAL_PERIOD_IN_US), 1);
 
   /* Channel 1 PWM configuration */ 
   TIM1_OC3Init(TIM1_OCMODE_PWM1, 

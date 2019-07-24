@@ -432,6 +432,12 @@ INTERRUPT_HANDLER(I2C_IRQHandler, 19)
  {    
  }
 #else /*STM8S105, STM8S103 or STM8S903 or STM8AF626x */
+
+float filter2 (float avg, float input, float alpha)
+{
+	avg = (alpha * input) + (1.0 - alpha) * avg;
+	return avg; 
+}
 /**
   * @brief  ADC1 interrupt routine.
   * @param  None
@@ -442,13 +448,13 @@ INTERRUPT_HANDLER(I2C_IRQHandler, 19)
 	uint16_t tmp;
     /* Get converted value */
 	if (currentADCChannel == ADC_CH_Poti) {
-		ADC_Reading = ADC1_GetConversionValue();
+		ADC_Reading = filter2(ADC_Reading, ADC1_GetConversionValue(), 0.3);
 		currentADCChannel = ADC_CH_Buttons;
 	} else {
 		tmp = ADC1_GetConversionValue();
 		if (tmp > BTN_SELECT_THRESHOLD) {
 			if (Buttons_Reading <= BTN_SELECT_THRESHOLD) {
-				selectButtonPressTimer = 255;
+				selectButtonPressTimer = 50;
 			} else {
 				selectButtonPressTimer--;
 				if (selectButtonPressTimer == 0)
@@ -457,7 +463,7 @@ INTERRUPT_HANDLER(I2C_IRQHandler, 19)
 		} else {
 			if (tmp > BTN_PULSE_W_THRESHOLD) {
 				if (Buttons_Reading <= BTN_PULSE_W_THRESHOLD) {
-					pulseWidthButtonPressTimer = 255;
+					pulseWidthButtonPressTimer = 50;
 				} else {
 					pulseWidthButtonPressTimer--;
 					if (pulseWidthButtonPressTimer == 0)
